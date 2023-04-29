@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
 import { decode } from 'jsonwebtoken';
 import { PayloadAuthDto } from 'src/auth/dto/payload-auth-dto';
@@ -17,6 +17,11 @@ import { Types } from 'mongoose';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('/:id')
+  async getUserController(@Param('id') id) {
+    return await this.userService.getUserById(id);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('/')
