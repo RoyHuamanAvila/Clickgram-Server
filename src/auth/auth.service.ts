@@ -4,6 +4,7 @@ import { RegisterAuthDto } from './dto/register-auth-dto';
 import { compare, hash } from 'bcrypt';
 import { LoginAuthDto } from './dto/login-auth-dto';
 import { JwtService } from '@nestjs/jwt';
+import { PayloadAuthDto } from './dto/payload-auth-dto';
 
 @Injectable()
 export class AuthService {
@@ -50,7 +51,7 @@ export class AuthService {
     if (!comparePassword)
       throw new HttpException('Incorrect password', HttpStatus.FORBIDDEN);
 
-    const payload = {
+    const payload: PayloadAuthDto = {
       id: foundUser._id,
       username: foundUser.username,
       fullname: foundUser.fullname,
