@@ -22,4 +22,48 @@ export class UserService {
     const foundUser = await this.userModel.findOne({ email });
     return foundUser;
   }
+
+  async getUserById(id: string) {
+    const foundUser = await this.userModel.findById(id);
+    return foundUser;
+  }
+
+  async followUser(id: string, idToFollow: string) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          follows: idToFollow,
+        },
+      },
+      { new: true },
+    );
+
+    await this.userModel.findByIdAndUpdate(idToFollow, {
+      $push: {
+        followers: id,
+      },
+    });
+    return updatedUser;
+  }
+
+  async unfollowUser(id: string, idToUnfollow: string) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        $pull: {
+          follows: idToUnfollow,
+        },
+      },
+      { new: true },
+    );
+
+    await this.userModel.findByIdAndUpdate(idToUnfollow, {
+      $pull: {
+        followers: id,
+      },
+    });
+
+    return updatedUser;
+  }
 }
