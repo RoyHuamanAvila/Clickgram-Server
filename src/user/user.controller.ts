@@ -23,6 +23,11 @@ export class UserController {
     return await this.userService.getUserById(id);
   }
 
+  @Get('/username/:username')
+  async getUserByUsernameController(@Param('username') username) {
+    return await this.userService.getUserByUsername(username);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/')
   async getUsersController() {
@@ -45,6 +50,12 @@ export class UserController {
 
     const decoded = await decode(token);
     const { id } = decoded as PayloadAuthDto;
+
+    if (id === idToFollow)
+      throw new HttpException(
+        "You can't follow yourself",
+        HttpStatus.BAD_REQUEST,
+      );
 
     const foundUser = await this.userService.getUserById(id);
 
