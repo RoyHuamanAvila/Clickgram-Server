@@ -23,6 +23,11 @@ export class UserService {
     return foundUser;
   }
 
+  async getUserByUsername(username: string) {
+    const foundUser = await this.userModel.findOne({ username });
+    return foundUser;
+  }
+
   async getUserById(id: string) {
     const foundUser = await this.userModel.findById(id);
     return foundUser;
