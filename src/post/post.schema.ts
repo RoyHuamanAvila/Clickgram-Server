@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, SchemaTypes } from 'mongoose';
-import { User } from 'src/user/user.schema';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -14,6 +13,9 @@ export class Post {
 
   @Prop({ type: [String], required: true })
   content: string[];
+
+  @Prop({ type: Number, default: 0 })
+  likeCount: number;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
