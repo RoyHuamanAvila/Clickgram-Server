@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes } from 'mongoose';
+import mongoose, { HydratedDocument, SchemaTypes } from 'mongoose';
 import { User } from 'src/user/user.schema';
 
 export type PostDocument = HydratedDocument<Post>;
@@ -7,7 +7,7 @@ export type PostDocument = HydratedDocument<Post>;
 @Schema()
 export class Post {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-  owner: User;
+  owner: mongoose.ObjectId;
 
   @Prop()
   description: string;
