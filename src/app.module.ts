@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -6,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PostModule } from './post/post.module';
+import { VerifyTokenMiddleware } from './middlewares/verifytoken.middleware';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -17,4 +23,14 @@ import { PostModule } from './post/post.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(VerifyTokenMiddleware)
+      .forRoutes(
+        { path: 'post', method: RequestMethod.POST },
+        { path: 'post/:id', method: RequestMethod.PATCH },
+        { path: 'post/:id', method: RequestMethod.DELETE },
+      );
+  }
+}

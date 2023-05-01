@@ -33,6 +33,32 @@ export class UserService {
     return foundUser;
   }
 
+  async addPostToUser(id: string, idPost: string) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          posts: idPost,
+        },
+      },
+      { new: true },
+    );
+    return updatedUser;
+  }
+
+  async deletePostUser(id: string, idPost: string) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        $pull: {
+          posts: idPost,
+        },
+      },
+      { new: true },
+    );
+    return updatedUser;
+  }
+
   async followUser(id: string, idToFollow: string) {
     const updatedUser = await this.userModel.findByIdAndUpdate(
       id,
