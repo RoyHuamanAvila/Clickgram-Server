@@ -20,7 +20,9 @@ export class PostService {
   }
 
   async getPosts() {
-    const foundPosts = await this.postModel.find({}).populate('owner');
+    const foundPosts = await this.postModel
+      .find({})
+      .populate('owner', 'username picture');
     return foundPosts;
   }
 
