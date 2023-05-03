@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PostModule } from './post/post.module';
 import { VerifyTokenMiddleware } from './middlewares/verifytoken.middleware';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -19,6 +20,7 @@ import { VerifyTokenMiddleware } from './middlewares/verifytoken.middleware';
     UserModule,
     AuthModule,
     PostModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -31,6 +33,7 @@ export class AppModule implements NestModule {
         { path: 'post', method: RequestMethod.POST },
         { path: 'post/:id', method: RequestMethod.PATCH },
         { path: 'post/:id', method: RequestMethod.DELETE },
+        { path: 'user/edit/picture', method: RequestMethod.PATCH },
       );
   }
 }

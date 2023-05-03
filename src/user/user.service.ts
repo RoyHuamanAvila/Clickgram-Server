@@ -97,4 +97,17 @@ export class UserService {
 
     return updatedUser;
   }
+
+  async updateProfilePicture(id: string, imageUrl: string) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        picture: imageUrl,
+      },
+      { new: true },
+    );
+    console.log(updatedUser);
+
+    return updatedUser;
+  }
 }
