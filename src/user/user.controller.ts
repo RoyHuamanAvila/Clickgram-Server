@@ -3,20 +3,31 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Inject,
   Param,
   Patch,
   Req,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { decode } from 'jsonwebtoken';
 import { PayloadAuthDto } from 'src/auth/dto/payload-auth-dto';
 import { Types } from 'mongoose';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { RequestCustom } from 'src/types/ExpressCustom';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Inject()
+  cloudinaryService: CloudinaryService;
 
   @Get('/:id')
   async getUserController(@Param('id') id) {
@@ -99,5 +110,26 @@ export class UserController {
 
     const updatedUser = await this.userService.unfollowUser(id, idToUnfollow);
     return updatedUser;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('edit/picture')
+  @UseInterceptors(
+    FileInterceptor('picture', {
+      storage: multer.memoryStorage(),
+    }),
+  )
+  async changePictureProfileController(
+    @UploadedFile() picture: Express.Multer.File,
+    @Req() req: RequestCustom,
+    @Res() res: Response,
+  ) {
+    const user = req.userData;
+    const { buffer } = picture;
+
+    const secure_url = await this.cloudinaryService.uploadImage(buffer, res);
+    await this.userService.updateProfilePicture(user.id, secure_url);
+
+    return res.json({ picture: secure_url });
   }
 }
