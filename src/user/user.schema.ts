@@ -28,7 +28,7 @@ export class User extends Document {
   followers: User[];
 
   @Prop({ default: [], type: [SchemaTypes.ObjectId], ref: 'Post' })
-  posts: mongoose.ObjectId[];
+  posts: Post[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
