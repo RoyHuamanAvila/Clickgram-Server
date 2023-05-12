@@ -24,7 +24,9 @@ export class UserService {
   }
 
   async getUserByUsername(username: string) {
-    const foundUser = await this.userModel.findOne({ username });
+    const foundUser = await this.userModel
+      .findOne({ username })
+      .populate('posts', 'content');
     return foundUser;
   }
 
