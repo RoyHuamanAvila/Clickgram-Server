@@ -3,7 +3,7 @@ import mongoose, { HydratedDocument, SchemaTypes } from 'mongoose';
 
 export type PostDocument = HydratedDocument<Post>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Post {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
   owner: mongoose.ObjectId;

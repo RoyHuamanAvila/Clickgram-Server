@@ -3,3 +3,8 @@ export interface UserUpdateDto {
   fullname: string;
   picture: string;
 }
+
+export interface UpdateUserDto {
+  fullname?: string;
+  presentation?: string;
+}
