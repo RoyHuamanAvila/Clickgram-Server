@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpException,
@@ -22,6 +23,7 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { RequestCustom } from 'src/types/ExpressCustom';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
+import { UpdateUserDto } from './dto/user-update-dto';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -131,5 +133,23 @@ export class UserController {
     await this.userService.updateProfilePicture(user.id, secure_url);
 
     return res.json({ picture: secure_url });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('/update')
+  async updateUserController(
+    @Req() req: RequestCustom,
+    @Body() userObject: UpdateUserDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const { _id } = req.userData;
+
+      await this.userService.updateUser(_id, userObject);
+
+      return res.json(userObject);
+    } catch (error) {
+      return error;
+    }
   }
 }

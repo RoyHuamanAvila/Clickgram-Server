@@ -34,6 +34,7 @@ export class AppModule implements NestModule {
         { path: 'post/:id', method: RequestMethod.PATCH },
         { path: 'post/:id', method: RequestMethod.DELETE },
         { path: 'user/edit/picture', method: RequestMethod.PATCH },
+        { path: 'user/update', method: RequestMethod.PATCH },
       );
   }
 }

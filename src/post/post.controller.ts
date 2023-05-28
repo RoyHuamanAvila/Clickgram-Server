@@ -10,17 +10,23 @@ import {
   Patch,
   Post,
   Req,
+  Res,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostCreateDto } from './dto/post-create-dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { decode } from 'jsonwebtoken';
 import { PayloadAuthDto } from 'src/auth/dto/payload-auth-dto';
 import { UserService } from 'src/user/user.service';
 import { PostUpdateDto } from './dto/post-update-dto';
 import { RequestCustom } from 'src/types/ExpressCustom';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('post')
 export class PostController {
@@ -29,22 +35,50 @@ export class PostController {
   @Inject()
   userService: UserService;
 
+  @Inject()
+  cloudinaryService: CloudinaryService;
+
   @UseGuards(JwtAuthGuard)
   @Post('/')
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      storage: multer.memoryStorage(),
+    }),
+  )
   async postCreateController(
+    @UploadedFiles() files: Express.Multer.File[],
     @Body() objectPost: PostCreateDto,
     @Req() req: RequestCustom,
+    @Res() res: Response,
   ) {
-    const { _id } = req.userData;
+    const userOwner = req.userData;
+    const imagesUpladed = [];
 
-    const createdPost = await this.postService.createPost({
+    for (let i = 0; i < files.length; i++) {
+      const uploaded = await this.cloudinaryService.uploadImage(
+        files[i].buffer,
+        res,
+      );
+      imagesUpladed.push(uploaded);
+    }
+
+    objectPost.content = imagesUpladed;
+    objectPost.owner = userOwner._id;
+
+    const createdPost = await this.postService.createPost(objectPost);
+
+    await this.userService.addPostToUser(userOwner._id, createdPost.id);
+
+    /* const createdPost = await this.postService.createPost({
       ...objectPost,
       owner: _id,
     });
 
     await this.userService.addPostToUser(_id, createdPost.id);
 
-    return createdPost;
+    return createdPost; */
+
+    return res.status(HttpStatus.CREATED).json(createdPost);
   }
 
   @Get('/')
